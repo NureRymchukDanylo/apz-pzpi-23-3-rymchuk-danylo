@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HobbyRent - IoT Monitoring System</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f3f4f6; }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .pulse-red { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    // Internationalization (i18n)
+    const translations = {
+        uk: {
+            catalog: 'Каталог',
+            monitoring: 'Моніторинг',
+            control: 'Контроль',
+            users: 'Користувачі',
+            user: 'Користувач',
+            admin: 'Адмін',
+            availableEquipment: 'Доступне обладнання',
+            allDevicesGPS: 'Всі пристрої обладнані GPS-трекерами',
+            available: 'В наявності',
+            rented: 'Орендовано',
+            rent: 'Орендувати',
+            busy: 'Зайнято',
+            iotMonitoring: 'IoT Моніторинг',
+            signal: 'Сигнал',
+            battery: 'Заряд батареї',
+            coordinates: 'Координати',
+            lastPing: 'Останній пінг',
+            noActiveIoT: 'Немає активних IoT потоків',
+            newDevice: 'Новий датчик',
+            editDevice: 'Редагувати',
+            deviceName: 'Назва пристрою',
+            equipmentType: 'Тип обладнання',
+            select: 'Оберіть...',
+            tourism: 'Туризм',
+            fishing: 'Риболовля',
+            sport: 'Спорт',
+            pricePerHour: 'Ціна (₴/год)',
+            register: 'Зареєструвати',
+            update: 'Оновити',
+            device: 'Пристрій',
+            iotStatus: 'Стан IoT',
+            manage: 'Управління',
+            activateIoT: 'Активувати IoT',
+            youConnecting: 'Ви підключаєте',
+            hours: 'год',
+            toPay: 'До сплати',
+            back: 'Назад',
+            activate: 'Активувати',
+            exportData: 'Експорт даних',
+            importData: 'Імпорт даних',
+            backup: 'Резервна копія',
+            exportJSON: 'Експорт JSON',
+            exportCSV: 'Експорт CSV',
+            importJSON: 'Імпорт JSON',
+            createBackup: 'Створити backup',
+            userManagement: 'Управління користувачами',
+            role: 'Роль',
+            changeRole: 'Змінити роль',
+            deleteUser: 'Видалити користувача',
+            confirmDelete: 'Видалити предмет з системи моніторингу?',
+            language: 'Мова',
+            ukrainian: 'Українська',
+            english: 'English',
+            login: 'Вхід в HobbyRent',
+            demoAuth: 'Демо-авторизація',
+            loginAsUser: 'Увійти як Орендар (User)',
+            loginAsAdmin: 'Увійти як Адміністратор',
+            logout: 'Вийти',
+            search: 'Пошук спорядження...',
+            allCategories: 'Всі категорії',
+            onlyAvailable: 'Тільки доступні'
+        },
+        en: {
+            catalog: 'Catalog',
+            monitoring: 'Monitoring',
+            control: 'Control',
+            users: 'Users',
+            user: 'User',
+            admin: 'Admin',
+            availableEquipment: 'Available Equipment',
+            allDevicesGPS: 'All devices equipped with GPS trackers',
+            available: 'Available',
+            rented: 'Rented',
+            rent: 'Rent',
+            busy: 'Busy',
+            iotMonitoring: 'IoT Monitoring',
+            signal: 'Signal',
+            battery: 'Battery',
+            coordinates: 'Coordinates',
+            lastPing: 'Last Ping',
+            noActiveIoT: 'No active IoT streams',
+            newDevice: 'New Device',
+            editDevice: 'Edit Device',
+            deviceName: 'Device Name',
+            equipmentType: 'Equipment Type',
+            select: 'Select...',
+            tourism: 'Tourism',
+            fishing: 'Fishing',
+            sport: 'Sport',
+            pricePerHour: 'Price (₴/hour)',
+            register: 'Register',
+            update: 'Update',
+            device: 'Device',
+            iotStatus: 'IoT Status',
+            manage: 'Manage',
+            activateIoT: 'Activate IoT',
+            youConnecting: 'You are connecting',
+            hours: 'hours',
+            toPay: 'To Pay',
+            back: 'Back',
+            activate: 'Activate',
+            exportData: 'Export Data',
+            importData: 'Import Data',
+            backup: 'Backup',
+            exportJSON: 'Export JSON',
+            exportCSV: 'Export CSV',
+            importJSON: 'Import JSON',
+            createBackup: 'Create Backup',
+            userManagement: 'User Management',
+            role: 'Role',
+            changeRole: 'Change Role',
+            deleteUser: 'Delete User',
+            confirmDelete: 'Delete item from monitoring system?',
+            language: 'Language',
+            ukrainian: 'Ukrainian',
+            english: 'English',
+            login: 'Login to HobbyRent',
+            demoAuth: 'Demo Authentication',
+            loginAsUser: 'Login as Renter (User)',
+            loginAsAdmin: 'Login as Administrator',
+            logout: 'Logout',
+            search: 'Search equipment...',
+            allCategories: 'All Categories',
+            onlyAvailable: 'Only Available'
+        }
+    };
+
+    function App() {
+        // ФЕЙКОВА АВТОРИЗАЦІЯ
+        const [currentUser, setCurrentUser] = useState(() => {
+            const savedUser = localStorage.getItem('hobbyrent_user');
+            return savedUser ? JSON.parse(savedUser) : null;
+        });
+
+        const [view, setView] = useState('CATALOG');
+        const [equipment, setEquipment] = useState([]);
+        const [users, setUsers] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [language, setLanguage] = useState('uk');
+
+        // НОВІ СТАНИ ДЛЯ ФІЛЬТРІВ
+        const [searchQuery, setSearchQuery] = useState('');
+        const [selectedCategory, setSelectedCategory] = useState('');
+        const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
+
+        const [iotData, setIotData] = useState({});
+        const [selectedItem, setSelectedItem] = useState(null);
+        const [rentalHours, setRentalHours] = useState(1);
+        const [editItem, setEditItem] = useState(null);
+        const [formData, setFormData] = useState({ title: '', category: '', hourlyRate: '', status: 'AVAILABLE' });
+
+        const t = translations[language];
+
+        // ФІЛЬТРАЦІЯ СПОРЯДЖЕННЯ
+        const filteredEquipment = useMemo(() => {
+            return equipment.filter(item => {
+                const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                     item.category.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesCategory = !selectedCategory || item.category === selectedCategory;
+                const matchesAvailability = !showOnlyAvailable || item.status === 'AVAILABLE';
+                return matchesSearch && matchesCategory && matchesAvailability;
+            });
+        }, [equipment, searchQuery, selectedCategory, showOnlyAvailable]);
+
+        const categories = useMemo(() => {
+            const uniqueCategories = [...new Set(equipment.map(item => item.category))];
+            return uniqueCategories.filter(cat => cat);
+        }, [equipment]);
+
+        const formatDate = (date) => {
+            return new Date(date).toLocaleString(language === 'uk' ? 'uk-UA' : 'en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        };
+
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/equipment');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                setEquipment(data);
+                setLoading(false);
+            } catch (err) {
+                console.error("Помилка завантаження:", err);
+                if (equipment.length === 0) {
+                    setEquipment([
+                        { id: 1, title: "Намет Terra Incognita", category: "Туризм", hourlyRate: 50, status: "AVAILABLE" },
+                        { id: 2, title: "Вудка Shimano FX", category: "Риболовля", hourlyRate: 35, status: "RENTED" }
+                    ]);
+                }
+                setLoading(false);
+            }
+        };
+
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch('/api/admin/users');
+                if (response.ok) {
+                    const data = await response.json();
+                    setUsers(data);
+                }
+            } catch (err) {
+                console.error("Error fetching users:", err);
+            }
+        };
+
+        useEffect(() => {
+            const interval = setInterval(() => {
+                setIotData(prev => {
+                    const next = { ...prev };
+                    equipment.forEach(item => {
+                        if (item.status === 'RENTED') {
+                            const existingBattery = prev[item.id]?.battery;
+                            const stableBattery = existingBattery || (Math.floor(Math.random() * (95 - 60 + 1)) + 60);
+
+                            next[item.id] = {
+                                battery: stableBattery,
+                                signal: Math.floor(Math.random() * 2) + 4,
+                                lat: (50.4501 + (Math.random() - 0.5) * 0.002).toFixed(4),
+                                lng: (30.5234 + (Math.random() - 0.5) * 0.002).toFixed(4),
+                                lastUpdate: formatDate(new Date())
+                            };
+                        } else {
+                            next[item.id] = { battery: 100, signal: 0, lat: "50.4501", lng: "30.5234", lastUpdate: "Standby" };
+                        }
+                    });
+                    return next;
+                });
+            }, 3000);
+
+            return () => clearInterval(interval);
+        }, [equipment, language]);
+
+        useEffect(() => {
+            fetchData();
+            if (currentUser?.role === 'ADMIN') {
+                fetchUsers();
+            }
+            const poll = setInterval(() => {
+                fetchData();
+                if (currentUser?.role === 'ADMIN') fetchUsers();
+            }, 10000);
+            return () => clearInterval(poll);
+        }, [currentUser?.role]);
+
+        const exportToJSON = () => {
+            const dataStr = JSON.stringify(equipment, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `equipment-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        };
+
+        const exportToCSV = () => {
+            const headers = ['ID', 'Title', 'Category', 'Hourly Rate', 'Status'];
+            const rows = equipment.map(item => [
+                item.id,
+                item.title,
+                item.category,
+                item.hourlyRate,
+                item.status
+            ]);
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.join(','))
+            ].join('\n');
+
+            const dataBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `equipment-export-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        };
+
+        const importFromJSON = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        setEquipment(importedData);
+                        alert(`Successfully imported ${importedData.length} items`);
+                    } catch (err) {
+                        alert('Error importing file: Invalid JSON');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        };
+
+        const createBackup = () => {
+            const backup = {
+                timestamp: new Date().toISOString(),
+                equipment: equipment,
+                users: users,
+                version: '1.0'
+            };
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `backup-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+            link.click();
+        };
+
+        const handleRent = async (item) => {
+            const updatedItem = {
+                ...item,
+                status: 'RENTED',
+                owner: { id: currentUser.id }
+            };
+
+            try {
+                const res = await fetch(`/api/equipment/${item.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedItem)
+                });
+
+                if (res.ok) {
+                    fetchData();
+                    setSelectedItem(null);
+                } else {
+                    setEquipment(prev => prev.map(i => i.id === item.id ? updatedItem : i));
+                    setSelectedItem(null);
+                }
+            } catch (e) {
+                setEquipment(prev => prev.map(i => i.id === item.id ? updatedItem : i));
+                setSelectedItem(null);
+            }
+        };
+
+        const handleSaveItem = async (e) => {
+            e.preventDefault();
+            const payload = { ...formData, owner: { id: currentUser.id } };
+            if (editItem) payload.id = editItem.id;
+
+            const method = editItem ? 'PUT' : 'POST';
+            const url = editItem ? `/api/equipment/${editItem.id}` : '/api/equipment';
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    setEditItem(null);
+                    setFormData({ title: '', category: '', hourlyRate: '', status: 'AVAILABLE' });
+                    fetchData();
+                }
+            } catch (e) { console.error(e); }
+        };
+
+        const handleDelete = async (id) => {
+            if(confirm(t.confirmDelete)) {
+                await fetch(`/api/equipment/${id}`, { method: 'DELETE' });
+                fetchData();
+            }
+        };
+
+        const handleChangeUserRole = async (userId, newRole) => {
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/role?newRole=${newRole}`, {
+                    method: 'PATCH'
+                });
+                if (res.ok) {
+                    fetchUsers();
+                }
+            } catch (err) {
+                console.error("Error changing role:", err);
+            }
+        };
+
+        const handleDeleteUser = async (userId) => {
+            if (confirm('Delete this user?')) {
+                try {
+                    const res = await fetch(`/api/admin/users/${userId}`, {
+                        method: 'DELETE'
+                    });
+                    if (res.ok) {
+                        fetchUsers();
+                    }
+                } catch (err) {
+                    console.error("Error deleting user:", err);
+                }
+            }
+        };
+
+        const handleLogout = () => {
+            localStorage.removeItem('hobbyrent_user');
+            setCurrentUser(null);
+            setView('CATALOG');
+        };
+
+        // Функція для отримання іконки категорії
+        const getCategoryIcon = (category) => {
+    switch(category) {
+        case 'Туризм': return 'fa-tent';
+        case 'Риболовля': return 'fa-fish';
+        case 'Outdoor': return 'fa-solid fa-person-running';
+        case 'Спорт': return 'fa-solid fa-person-running';
+        default: return 'fa-box';             
+    }
+};
+
+        // ЕКРАН АВТОРИЗАЦІЇ
+        if (!currentUser) {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+                    <div className="bg-white p-10 rounded-[3rem] shadow-2xl max-w-md w-full border border-gray-100 animate-fade-in">
+                        <div className="text-center mb-8">
+                            <div className="bg-indigo-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white text-3xl shadow-lg">
+                                <i className="fas fa-satellite-dish"></i>
+                            </div>
+                            <h2 className="text-3xl font-black text-gray-900 tracking-tighter">{t.login}</h2>
+                            <p className="text-gray-400 text-xs font-bold uppercase mt-2">{t.demoAuth}</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            <button
+                                onClick={() => {
+                                    const user = { id: 1, name: 'Іван Орендар', role: 'USER', email: 'user@hobbyrent.com' };
+                                    localStorage.setItem('hobbyrent_user', JSON.stringify(user));
+                                    setCurrentUser(user);
+                                }}
+                                className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg"
+                            >
+                                {t.loginAsUser}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const user = { id: 1, name: 'Адмін Системи', role: 'ADMIN', email: 'admin@hobbyrent.com' };
+                                    localStorage.setItem('hobbyrent_user', JSON.stringify(user));
+                                    setCurrentUser(user);
+                                }}
+                                className="w-full bg-gray-900 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-black transition-all shadow-lg"
+                            >
+                                {t.loginAsAdmin}
+                            </button>
+                        </div>
+                        <p className="text-center text-[10px] text-gray-300 mt-8 font-bold uppercase">v1.0.0 HobbyRent System</p>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="min-h-screen pb-20">
+                <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 px-6 py-4">
+                    <div className="max-w-7xl mx-auto flex justify-between items-center">
+                        <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setView('CATALOG')}>
+                            <div className="bg-indigo-600 p-2 rounded-lg text-white shadow-lg">
+                                <i className="fas fa-satellite-dish text-xl"></i>
+                            </div>
+                            <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">HobbyRent</span>
+                        </div>
+
+                        <div className="hidden md:flex items-center space-x-8 font-bold text-xs uppercase tracking-widest">
+                            <button onClick={() => setView('CATALOG')} className={`transition ${view === 'CATALOG' ? 'text-indigo-600' : 'text-gray-400 hover:text-indigo-400'}`}>{t.catalog}</button>
+                            <button onClick={() => setView('MY_RENTALS')} className={`transition ${view === 'MY_RENTALS' ? 'text-indigo-600' : 'text-gray-400 hover:text-indigo-400'}`}>{t.monitoring}</button>
+                            {currentUser.role === 'ADMIN' && (
+                                <button onClick={() => setView('ADMIN_PANEL')} className={`transition ${view.startsWith('ADMIN') ? 'text-indigo-600' : 'text-gray-400 hover:text-indigo-400'}`}>{t.control}</button>
+                            )}
+                        </div>
+
+                        <div className="flex items-center space-x-4">
+                            <select
+                                className="text-[10px] font-black bg-slate-100 border-none rounded-full px-4 py-2 outline-none text-indigo-600 uppercase"
+                                onChange={(e) => setLanguage(e.target.value)}
+                                value={language}
+                            >
+                                <option value="uk">{t.ukrainian}</option>
+                                <option value="en">{t.english}</option>
+                            </select>
+
+                            <div className="flex items-center space-x-2 bg-slate-100 rounded-full pr-4 py-1">
+                                <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-black text-xs shadow-md">
+                                    {currentUser.name[0]}
+                                </div>
+                                <span className="text-[10px] font-black text-gray-700 uppercase">{currentUser.name}</span>
+                            </div>
+
+                            <button
+                                onClick={handleLogout}
+                                className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-all"
+                                title={t.logout}
+                            >
+                                <i className="fas fa-sign-out-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+
+                <main className="max-w-7xl mx-auto px-6 py-8">
+                    {view === 'CATALOG' && (
+                        <div className="animate-fade-in">
+                            <div className="mb-10">
+                                <h2 className="text-4xl font-black text-gray-900 tracking-tighter">{t.availableEquipment}</h2>
+                                <p className="text-gray-400 font-medium">{t.allDevicesGPS}</p>
+                            </div>
+
+                            {/* ФІЛЬТРИ ТА ПОШУК */}
+                            <div className="mb-8 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="relative">
+                                        <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                        <input
+                                            type="text"
+                                            placeholder={t.search}
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="w-full pl-12 pr-4 py-3 bg-slate-50 rounded-2xl border-none outline-none font-bold text-sm focus:ring-2 focus:ring-indigo-500"
+                                        />
+                                    </div>
+
+                                    <select
+                                        value={selectedCategory}
+                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                        className="w-full px-4 py-3 bg-slate-50 rounded-2xl border-none outline-none font-bold text-sm focus:ring-2 focus:ring-indigo-500"
+                                    >
+                                        <option value="">{t.allCategories}</option>
+                                        {categories.map(cat => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                    </select>
+
+                                    <label className="flex items-center space-x-3 cursor-pointer bg-slate-50 px-4 py-3 rounded-2xl">
+                                        <input
+                                            type="checkbox"
+                                            checked={showOnlyAvailable}
+                                            onChange={(e) => setShowOnlyAvailable(e.target.checked)}
+                                            className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
+                                        />
+                                        <span className="font-bold text-sm text-gray-700">{t.onlyAvailable}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                                {filteredEquipment.map(item => (
+                                    <div key={item.id} className="bg-white rounded-[3rem] p-4 shadow-sm border border-gray-100 hover:shadow-2xl transition-all duration-500 group">
+                                        <div className="relative h-60 rounded-[2.5rem] bg-gradient-to-br from-indigo-50 to-purple-50 overflow-hidden flex items-center justify-center">
+                                            <div className="text-7xl text-indigo-300 opacity-50">
+                                                <i className={`fas ${getCategoryIcon(item.category)}`}></i>
+                                            </div>
+                                            <div className="absolute top-6 right-6">
+                                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${
+                                                    item.status === 'AVAILABLE' ? 'bg-green-500 text-white' : 'bg-orange-500 text-white'
+                                                }`}>
+                                                    {item.status === 'AVAILABLE' ? t.available : t.rented}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="p-6">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{item.category}</span>
+                                                <div className="text-right">
+                                                    <span className="text-2xl font-black text-gray-900">{item.hourlyRate} ₴</span>
+                                                    <span className="text-[10px] text-gray-400 block font-bold">/год</span>
+                                                </div>
+                                            </div>
+                                            <h3 className="text-2xl font-black text-gray-800 mb-6">{item.title}</h3>
+                                            <button
+                                                onClick={() => item.status === 'AVAILABLE' && setSelectedItem(item)}
+                                                className={`w-full py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest transition-all ${
+                                                    item.status === 'AVAILABLE'
+                                                    ? 'bg-gray-900 text-white hover:bg-indigo-600'
+                                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                }`}
+                                            >
+                                                {item.status === 'AVAILABLE' ? t.rent : t.busy}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {filteredEquipment.length === 0 && (
+                                <div className="text-center py-20">
+                                    <i className="fas fa-search text-gray-300 text-6xl mb-4"></i>
+                                    <p className="text-gray-400 font-black uppercase tracking-widest">Нічого не знайдено</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {view === 'MY_RENTALS' && (
+                        <div className="animate-fade-in max-w-5xl mx-auto">
+                            <h2 className="text-4xl font-black text-gray-900 mb-10 tracking-tighter">{t.iotMonitoring}</h2>
+                            <div className="space-y-6">
+                                {equipment.filter(i => i.status === 'RENTED').map(item => {
+                                    const live = iotData[item.id] || { battery: 0, lat: '0', lng: '0', signal: 0, lastUpdate: '...' };
+                                    return (
+                                        <div key={item.id} className="bg-white p-8 rounded-[3rem] shadow-sm border border-gray-100">
+                                            <div className="flex flex-wrap items-center justify-between gap-6">
+                                                <div className="flex items-center space-x-6">
+                                                    <div className="w-20 h-20 bg-indigo-50 rounded-[2.5rem] flex items-center justify-center text-indigo-600 text-3xl">
+                                                        <i className={`fas ${getCategoryIcon(item.category)}`}></i>
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-black text-2xl text-gray-800">{item.title}</h4>
+                                                        <div className="flex items-center space-x-3 mt-1">
+                                                            <span className="flex h-2 w-2 rounded-full bg-green-500 pulse-red"></span>
+                                                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{t.signal}: Live ({live.signal}/5)</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-8 border-l border-gray-100 pl-8">
+                                                    <div>
+                                                        <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{t.battery}</p>
+                                                        <div className="flex items-center space-x-2">
+                                                            <i className={`fas fa-battery-${live.battery > 50 ? 'full' : 'half'} ${live.battery < 30 ? 'text-red-500' : 'text-green-500'}`}></i>
+                                                            <span className="font-black text-gray-700">{live.battery}%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{t.coordinates}</p>
+                                                        <p className="font-black text-gray-700 text-sm tracking-tighter">{live.lat}, {live.lng}</p>
+                                                    </div>
+                                                    <div className="hidden md:block">
+                                                        <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{t.lastPing}</p>
+                                                        <p className="font-black text-indigo-600 text-sm uppercase">{live.lastUpdate}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                                {equipment.filter(i => i.status === 'RENTED').length === 0 && (
+                                    <div className="text-center py-32 bg-white rounded-[4rem] border-2 border-dashed border-gray-100">
+                                        <i className="fas fa-tower-broadcast text-gray-100 text-7xl mb-6"></i>
+                                        <p className="text-gray-400 font-black uppercase tracking-widest">{t.noActiveIoT}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {view.startsWith('ADMIN') && (
+                        <div className="animate-fade-in">
+                            <div className="mb-8 flex space-x-4">
+                                <button
+                                    onClick={() => setView('ADMIN_EQUIPMENT')}
+                                    className={`px-6 py-3 rounded-2xl font-black text-xs uppercase transition-all ${
+                                        view === 'ADMIN_EQUIPMENT' || (!['ADMIN_USERS', 'ADMIN_DATA'].includes(view))
+                                        ? 'bg-indigo-600 text-white'
+                                        : 'bg-slate-200 text-gray-700 hover:bg-slate-300'
+                                    }`}
+                                >
+                                    {t.device}
+                                </button>
+                                <button
+                                    onClick={() => setView('ADMIN_USERS')}
+                                    className={`px-6 py-3 rounded-2xl font-black text-xs uppercase transition-all ${
+                                        view === 'ADMIN_USERS'
+                                        ? 'bg-indigo-600 text-white'
+                                        : 'bg-slate-200 text-gray-700 hover:bg-slate-300'
+                                    }`}
+                                >
+                                    {t.userManagement}
+                                </button>
+                                <button
+                                    onClick={() => setView('ADMIN_DATA')}
+                                    className={`px-6 py-3 rounded-2xl font-black text-xs uppercase transition-all ${
+                                        view === 'ADMIN_DATA'
+                                        ? 'bg-indigo-600 text-white'
+                                        : 'bg-slate-200 text-gray-700 hover:bg-slate-300'
+                                    }`}
+                                >
+                                    {t.exportData}
+                                </button>
+                            </div>
+
+                            {(view === 'ADMIN_EQUIPMENT' || view === 'ADMIN_PANEL') && (
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                                    <div className="lg:col-span-1">
+                                        <div className="bg-white p-10 rounded-[3.5rem] shadow-sm border border-gray-100 sticky top-24">
+                                            <h3 className="text-2xl font-black text-gray-900 mb-8">{editItem ? t.editDevice : t.newDevice}</h3>
+                                            <form onSubmit={handleSaveItem} className="space-y-6">
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">{t.deviceName}</label>
+                                                    <input type="text" className="w-full p-5 bg-slate-50 rounded-3xl border-none outline-indigo-600 font-bold"
+                                                        value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">{t.equipmentType}</label>
+                                                    <select className="w-full p-5 bg-slate-50 rounded-3xl border-none outline-indigo-600 font-bold"
+                                                        value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} required>
+                                                        <option value="">{t.select}</option>
+                                                        <option value="Туризм">{t.tourism}</option>
+                                                        <option value="Риболовля">{t.fishing}</option>
+                                                        <option value="Спорт">{t.sport}</option>
+                                                    </select>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">{t.pricePerHour}</label>
+                                                    <input type="number" className="w-full p-5 bg-slate-50 rounded-3xl border-none outline-indigo-600 font-bold"
+                                                        value={formData.hourlyRate} onChange={e => setFormData({...formData, hourlyRate: e.target.value})} required />
+                                                </div>
+                                                <button className="w-full bg-indigo-600 text-white py-6 rounded-3xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-indigo-700 transition-all">
+                                                    {editItem ? t.update : t.register}
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div className="lg:col-span-2">
+                                        <div className="bg-white rounded-[4rem] shadow-sm border border-gray-100 overflow-hidden">
+                                            <table className="w-full text-left">
+                                                <thead className="bg-slate-50 text-gray-400 text-[10px] uppercase font-black tracking-widest border-b">
+                                                    <tr>
+                                                        <th className="px-10 py-8">{t.device}</th>
+                                                        <th className="px-10 py-8">{t.iotStatus}</th>
+                                                        <th className="px-10 py-8 text-right">{t.manage}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-50">
+                                                    {equipment.map(item => (
+                                                        <tr key={item.id} className="hover:bg-slate-50/50 transition-colors group">
+                                                            <td className="px-10 py-8">
+                                                                <p className="font-black text-gray-800 text-xl tracking-tight">{item.title}</p>
+                                                                <p className="text-[10px] text-indigo-400 font-black uppercase">{item.category}</p>
+                                                            </td>
+                                                            <td className="px-10 py-8">
+                                                                <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                                                                    item.status === 'AVAILABLE' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'
+                                                                }`}>
+                                                                    {item.status}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-10 py-8 text-right space-x-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <button onClick={() => { setEditItem(item); setFormData(item); }} className="text-indigo-600 hover:bg-indigo-50 p-3 rounded-2xl"><i className="fas fa-pen"></i></button>
+                                                                <button onClick={() => handleDelete(item.id)} className="text-red-500 hover:bg-red-50 p-3 rounded-2xl"><i className="fas fa-trash"></i></button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {view === 'ADMIN_USERS' && (
+                                <div className="bg-white rounded-[4rem] shadow-sm border border-gray-100 overflow-hidden">
+                                    <div className="p-10 border-b border-gray-100">
+                                        <h3 className="text-2xl font-black text-gray-900">{t.userManagement}</h3>
+                                    </div>
+                                    <table className="w-full text-left">
+                                        <thead className="bg-slate-50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                                            <tr>
+                                                <th className="px-10 py-6">ID</th>
+                                                <th className="px-10 py-6">Username</th>
+                                                <th className="px-10 py-6">Email</th>
+                                                <th className="px-10 py-6">{t.role}</th>
+                                                <th className="px-10 py-6 text-right">{t.manage}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-50">
+                                            {users.map(u => (
+                                                <tr key={u.id} className="hover:bg-slate-50/50">
+                                                    <td className="px-10 py-6 font-bold">{u.id}</td>
+                                                    <td className="px-10 py-6 font-black text-gray-800">{u.username}</td>
+                                                    <td className="px-10 py-6 text-gray-600">{u.email}</td>
+                                                    <td className="px-10 py-6">
+                                                        <select
+                                                            className="text-[10px] font-black bg-slate-100 rounded-full px-4 py-2 outline-none uppercase"
+                                                            value={u.role}
+                                                            onChange={(e) => handleChangeUserRole(u.id, e.target.value)}
+                                                        >
+                                                            <option value="ROLE_USER">User</option>
+                                                            <option value="ROLE_OWNER">Owner</option>
+                                                            <option value="ROLE_ADMIN">Admin</option>
+                                                        </select>
+                                                    </td>
+                                                    <td className="px-10 py-6 text-right">
+                                                        <button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:bg-red-50 p-3 rounded-2xl">
+                                                            <i className="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {view === 'ADMIN_DATA' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="bg-white p-10 rounded-[3.5rem] shadow-sm border border-gray-100">
+                                        <h3 className="text-2xl font-black text-gray-900 mb-6">{t.exportData}</h3>
+                                        <div className="space-y-4">
+                                            <button onClick={exportToJSON} className="w-full bg-indigo-600 text-white py-5 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all">
+                                                {t.exportJSON}
+                                            </button>
+                                            <button onClick={exportToCSV} className="w-full bg-green-600 text-white py-5 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-green-700 transition-all">
+                                                {t.exportCSV}
+                                            </button>
+                                            <button onClick={createBackup} className="w-full bg-purple-600 text-white py-5 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-purple-700 transition-all">
+                                                {t.createBackup}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white p-10 rounded-[3.5rem] shadow-sm border border-gray-100">
+                                        <h3 className="text-2xl font-black text-gray-900 mb-6">{t.importData}</h3>
+                                        <div className="border-2 border-dashed border-gray-200 rounded-3xl p-10 text-center">
+                                            <i className="fas fa-cloud-upload-alt text-5xl text-gray-300 mb-4"></i>
+                                            <label className="cursor-pointer">
+                                                <span className="text-indigo-600 font-black text-xs uppercase tracking-widest">{t.importJSON}</span>
+                                                <input type="file" accept=".json" onChange={importFromJSON} className="hidden" />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </main>
+
+                {selectedItem && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-md animate-fade-in">
+                        <div className="bg-white rounded-[4rem] p-12 max-w-md w-full shadow-2xl">
+                            <div className="text-center mb-10">
+                                <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-600 text-4xl">
+                                    <i className="fas fa-plug-circle-check"></i>
+                                </div>
+                                <h3 className="text-3xl font-black text-gray-900 tracking-tighter mb-2">{t.activateIoT}</h3>
+                                <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">{t.youConnecting} {selectedItem.title}</p>
+                            </div>
+                            <div className="bg-slate-50 p-8 rounded-[3rem] mb-8">
+                                <div className="flex justify-between items-center mb-6">
+                                    <button onClick={() => setRentalHours(Math.max(1, rentalHours-1))} className="w-12 h-12 rounded-2xl bg-white shadow-sm font-black">-</button>
+                                    <span className="text-4xl font-black text-gray-900">{rentalHours} {t.hours}</span>
+                                    <button onClick={() => setRentalHours(rentalHours+1)} className="w-12 h-12 rounded-2xl bg-white shadow-sm font-black">+</button>
+                                </div>
+                                <div className="flex justify-between items-end border-t pt-6">
+                                    <div>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase">{t.toPay}</p>
+                                        <p className="text-4xl font-black text-indigo-600">{selectedItem.hourlyRate * rentalHours} ₴</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <button onClick={() => setSelectedItem(null)} className="py-6 font-black text-[10px] uppercase text-gray-400">{t.back}</button>
+                                <button onClick={() => handleRent(selectedItem)} className="py-6 rounded-3xl font-black text-[10px] uppercase bg-gray-900 text-white shadow-xl hover:bg-black transition-all">{t.activate}</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+</script>
+</body>
+</html>
