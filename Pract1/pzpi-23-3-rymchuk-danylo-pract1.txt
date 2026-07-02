@@ -1,0 +1,292 @@
+﻿            МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+Кафедра Програмної інженерії
+
+
+
+
+Звіт
+з практичної роботи №1
+з дисципліни: "Архітектура програмного забезпечення" з теми: "Патерни проєктування"
+
+
+
+
+
+
+
+
+Виконав:
+ст. гр. ПЗПІ-23-3
+Римчук Д.О.
+     
+Перевірив: ст. викл. каф. ПІ Сокорчук І. П
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+Харків - 2026
+1 ІСТОРІЯ ЗМІН
+№ДатаВерсія звітуОпис змін та виправлень101.05.20260.1Створено розділи "Завдання" та "Опис виконаної роботи"202.05.20260.2Додано приклади програмного коду та висновки303.05.20260.3Оформлено додатки, підготовлено фінальну версію звіту
+
+
+
+2 МЕТА РОБОТИ
+     	Метою практичного заняття є ознайомитися з одним із патернів проєктування програмного забезпечення, проаналізувати його структуру, призначення та практичне застосування.
+     Відповідно до завдання необхідно:
+        1. Підготувати доповідь на тему: "Патерн проєктування ПЗ: Builder".
+        2. Обрати патерн із книги GoF (крім Singleton).
+        3. Розробити слайди презентації доповіді.
+        4. Записати відеозапис доповіді.
+        5. Опублікувати відео на YouTube з облікового запису @nure.ua.
+        6. Створити та налаштувати GitHub-репозиторій студента.
+        7. Створити структуру директорій репозиторію відповідно до вимог дисципліни.
+        8. Додати файл README.md встановленої структури.
+        9. Завантажити програмний код прикладів шаблона.
+        10. Експортувати звіт у PDF та простий текстовий файл TXT з кодуванням UTF-8.
+        11. Завантажити звіт у форматі PDF на платформу dl.nure.ua.
+        12. Завантажити звіт у форматі TXT у репозиторій.
+
+	 
+
+
+
+
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+	3.1 Загальні відомості про шаблони проектування
+     Шаблони проєктування - це типові рішення часто зустрічуваних проблем при проєктуванні об'єктно-орієнтованого програмного забезпечення. Вони не є готовим кодом, а слугують концептуальною основою для побудови архітектури. Книга "Design Patterns: Elements of Reusable Object-Oriented Software" класифікує 23 класичні патерни на три групи: породжувальні, структурні та поведінкові.
+     3.2 Опис обраного патерна
+     Назва патерна: Builder (Будівник). 
+	Тип шаблона: Породжувальний . 
+	Основне призначення: Відокремлення конструювання складного об'єкта від його подання, так що в результаті одного й того ж процесу конструювання можуть виходити різні подання. 
+	Передумови застосування: Алгоритм створення складного об'єкта повинен бути незалежним від частин, які його складають, і способу їх з'єднання; процес конструювання повинен забезпечувати різні подання об'єкта, що конструюється. 	Переваги: Дозволяє змінювати внутрішнє подання продукту; інкапсулює складний код створення об'єкта; забезпечує детальний контроль над процесом створення. 
+	Недоліки: Конкретний Будівник та продукт, який він створює, жорстко зв'язані між собою, що ускращує створення універсального Будівника.
+     3.3 Структура патерна
+     Структура патерна Builder складається з таких учасників:
+* Product (Продукт) - складний об'єкт, що створюється.
+* Builder (Будівник) - абстрактний інтерфейс для створення частин продукту.
+* ConcreteBuilder (Конкретний будівник) - реалізує інтерфейс Builder, конструює та збирає частини продукту.
+* Director (Директор) - створює об'єкт, використовуючи інтерфейс Builder.
+* Client (Клієнт) - створює об'єкт ConcreteBuilder та Director. Взаємодія об'єктів: Клієнт створює Director та конкретний ConcreteBuilder. Director використовує переданий йому ConcreteBuilder для побудови продукту, викликаючи відповідні методи інтерфейсу Builder. Після завершення Клієнт отримує готовий продукт.
+     3.4 Реалізація шаблона патерна
+     Реалізація виконана мовою програмування Java. Основні етапи:
+1. Створено клас Computer (Product) з полями для компонентів ПК.
+2. Створено інтерфейс ComputerBuilder з методами для додавання кожної частини ПК.
+3. Реалізовано класи GamingComputerBuilder та OfficeComputerBuilder (ConcreteBuilders), які заповнюють Computer специфічними компонентами.
+4. Створено клас ComputerDirector, який керує процесом збірки, викликаючи методи будівника у певній послідовності.
+5. У класі Main продемонстровано створення ігрового та офісного комп'ютерів.
+     3.5 Організація GitHub-репозиторію 
+     Назва репозиторію: apz-pzpi-23-3-rymchuk-danylo 
+	Структура репозиторію відповідає вимогам дисципліни:
+	Pract1/
+      Pract2/
+      Lab1/
+      Lab2/
+      Lab3/
+      Lab4/
+      Lab5/
+      README.md
+      LICENSE
+     Файл опису репозиторію README.md містить назву, групу ПЗПІ-23-3, прізвище та ім'я студента, а також теми для наступних робіт.
+     3.6 Підготовка презентації 
+     Слайди створено відповідно до таких вимог:
+* українська мова;
+* науково-технічний стиль;
+* нумерація слайдів у правому нижньому куті;
+* відсутність надлишкового художнього оформлення.
+     3.7 Підготовка відеозапису доповіді 
+     Характеристики відео:
+* тривалість: 3 хв;
+* мова: українська;
+* платформа: YouTube: https://youtu.be/MJoARvvT89E
+* доступ: за посиланням без пароля;
+* додано хронологічний опис.
+
+
+4 ВИСНОВКИ
+     У результаті виконання практичного заняття було досліджено патерн проєктування Builder, проаналізовано його архітектурні особливості та реалізовано приклади програмного коду мовою Java, що дозволило сформувати навички застосування породжувальних патернів для розв'язання проблеми складних конструкторів. Окрім того, створено GitHub-репозиторій із стандартизованою структурою, підготовлено презентацію та відеодоповідь, які висвітлюють теоретичні й практичні аспекти досліджуваного шаблону. Практичне застосування патернів проєктування дозволяє підвищити повторне використання коду, масштабованість та підтримуваність програмних систем.
+
+     
+
+
+
+ДОДАТОК А
+Відеозапис
+     Відеозапис презентації результатів практичного заняття: https://youtu.be/MJoARvvT89E
+     Хронологічний опис відеозапису:
+     00:00 - Вступ
+     00:08 - Загальні відомості про патерни проєктування
+     00:29 - Патерн Builder - визначення
+     00:46 - Проблема, яку вирішує Builder
+     01:03 - UML-діаграма патерна Builder
+     01:18 - Учасники патерна
+     01:34 - Переваги та недоліки
+     01:48 - Практичний приклад
+     02:03 - Реалізація на Java
+     02:18 - Результат виконання
+     02:35 - Сфери застосування патерна Builder
+     02:52 - Висновки
+
+
+
+ДОДАТОК Б
+Слайди презентації
+
+Рисунок 1 - Титульний слайд
+
+
+Рисунок 2 - Загальні відомості про патерни проєктування
+
+Рисунок 3 - Патерн Builder - визначення
+
+Рисунок 4 - Проблема, яку вирішує Builder
+
+
+
+Рисунок 5 - UML-діаграма патерна Builder
+
+
+Рисунок 6 - Учасники патерна
+
+
+
+Рисунок 7 - Переваги та недоліки
+
+Рисунок 8 - Практичний приклад
+
+
+
+Рисунок 9 - Реалізація на Java
+
+Рисунок 10 - Результат виконання
+
+
+
+Рисунок 11 - Сфери застосування патерна Builder
+
+Рисунок 12 - Висновки
+
+
+
+ДОДАТОК В
+Приклади програмного коду
+1  // Product (Продукт)
+2  class Computer {
+3      private String cpu;
+4      private String ram;
+5      private String storage;
+6      private String gpu;
+7      private boolean hasBluetooth;
+8  
+9      public void setCpu(String cpu) { this.cpu = cpu; }
+10     public void setRam(String ram) { this.ram = ram; }
+11     public void setStorage(String storage) { this.storage = storage; }
+12     public void setGpu(String gpu) { this.gpu = gpu; }
+13     public void setHasBluetooth(boolean hasBluetooth) { this.hasBluetooth = hasBluetooth; }
+14 
+15     @Override
+16     public String toString() {
+17         return "Computer [CPU=" + cpu + ", RAM=" + ram + ", Storage=" + storage + 
+18                ", GPU=" + gpu + ", Bluetooth=" + hasBluetooth + "]";
+19     }
+20 }
+21 
+22 // Builder (Будівник - інтерфейс)
+23 interface ComputerBuilder {
+24     void buildCPU();
+25     void buildRAM();
+26     void buildStorage();
+27     void buildGPU();
+28     void buildBluetooth();
+29     Computer getResult();
+30 }
+31 
+32 // ConcreteBuilder (Конкретний будівник - Ігровий ПК)
+33 class GamingComputerBuilder implements ComputerBuilder {
+34     private Computer computer;
+35 
+36     public GamingComputerBuilder() {
+37         this.computer = new Computer();
+38     }
+39 
+40     public void buildCPU() { computer.setCpu("Intel Core i9"); }
+41     public void buildRAM() { computer.setRam("64GB DDR5"); }
+42     public void buildStorage() { computer.setStorage("2TB NVMe SSD"); }
+43     public void buildGPU() { computer.setGpu("NVIDIA RTX 4090"); }
+44     public void buildBluetooth() { computer.setHasBluetooth(true); }
+45     
+46     public Computer getResult() { return computer; }
+47 }
+48 
+49 // ConcreteBuilder (Конкретний будівник - Офісний ПК)
+50 class OfficeComputerBuilder implements ComputerBuilder {
+51     private Computer computer;
+52 
+53     public OfficeComputerBuilder() {
+54         this.computer = new Computer();
+55     }
+56 
+57     public void buildCPU() { computer.setCpu("Intel Core i3"); }
+58     public void buildRAM() { computer.setRam("8GB DDR4"); }
+59     public void buildStorage() { computer.setStorage("256GB SATA SSD"); }
+60     public void buildGPU() { computer.setGpu("Integrated Graphics"); }
+61     public void buildBluetooth() { computer.setHasBluetooth(false); }
+62     
+63     public Computer getResult() { return computer; }
+64 }
+65 
+66 // Director (Директор)
+67 class ComputerDirector {
+68     private ComputerBuilder builder;
+69 
+70     public ComputerDirector(ComputerBuilder builder) {
+71         this.builder = builder;
+72     }
+73 
+74     public void constructMinimalPC() {
+75         builder.buildCPU();
+76         builder.buildRAM();
+77         builder.buildStorage();
+78     }
+79 
+80     public void constructFullPC() {
+81         builder.buildCPU();
+82         builder.buildRAM();
+83         builder.buildStorage();
+84         builder.buildGPU();
+85         builder.buildBluetooth();
+86     }
+87 }
+88 
+89 // Client (Клієнт)
+90 public class Main {
+91     public static void main(String[] args) {
+92         // Створюємо ігровий ПК
+93         GamingComputerBuilder gamingBuilder = new GamingComputerBuilder();
+94         ComputerDirector director = new ComputerDirector(gamingBuilder);
+95         
+96         director.constructFullPC();
+97         Computer gamingPC = gamingBuilder.getResult();
+98         System.out.println("Gaming PC: " + gamingPC);
+99 
+100        // Створюємо офісний ПК
+101        OfficeComputerBuilder officeBuilder = new OfficeComputerBuilder();
+102        director = new ComputerDirector(officeBuilder);
+103        
+104        director.constructMinimalPC();
+105        Computer officePC = officeBuilder.getResult();
+106        System.out.println("Office PC: " + officePC);
+107    }
+108 }
+
+21
+
+
+
